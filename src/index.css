@@ -1,0 +1,14 @@
+/* Custom Checkbox Hijau */
+.custom-checkbox.form-check-input:checked {
+    background-color: #28a745 !important;
+    /* Warna hijau sukses */
+    border-color: #28a745 !important;
+    box-shadow: none !important;
+    /* Menghilangkan bayangan biru saat diklik */
+}
+
+/* Opsional: Efek saat hover atau fokus agar tidak biru */
+.custom-checkbox.form-check-input:focus {
+    border-color: #28a745 !important;
+    box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.25) !important;
+}
