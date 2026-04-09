@@ -1,16 +1,34 @@
-# React + Vite
+# 📝 Todo Apps Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, clean, and functional Todo Management Dashboard built with **React**, **Reactstrap**, and **Lucide Icons**. This project features a professional UI/UX layout with sub-task management, search functionality, and a secure deletion workflow.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## ✨ Features
 
-## React Compiler
+- **Integrated Sidebar & Header**: A seamless layout where the sidebar houses the branding and navigation, while the header manages search and user profile.
+- **Dual-Column Task Tracking**: Tasks are automatically categorized into "Not Checked" and "Checked" for better focus.
+- **Sub-Todo Management**: Ability to create and manage sub-tasks within a main task with a clean nested UI.
+- **Confirmation Workflow**: Prevents accidental data loss with a custom confirmation modal before deleting tasks.
+- **Responsive UI**: Optimized for desktop and tablet views using a flexible grid system.
+- **Dynamic Avatars**: Automatically generates user avatars and display names based on the email prefix.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 🚀 Tech Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- **Frontend Framework**: React.js
+- **UI Components**: [Reactstrap](https://reactstrap.github.io/) (Bootstrap 5 for React)
+- **Icons**: [Lucide React](https://lucide.dev/)
+- **State Management**: React Context API (Auth & Todo Context)
+- **Styling**: Custom CSS-in-JS (via styled blocks)
+
+---
+
+## 🛠️ Installation & Setup
+
+1. **Clone the repository**
+   ```bash
+   git clone [git@github.com:adiprabowo194/test_case-study_tirta-medical-frontend.git](git@github.com:adiprabowo194/test_case-study_tirta-medical-frontend.git)
+   cd todo-apps-dashboard
+   ```
