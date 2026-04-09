@@ -29,6 +29,6 @@ A modern, clean, and functional Todo Management Dashboard built with **React**, 
 
 1. **Clone the repository**
    ```bash
-   git clone this link (git@github.com:adiprabowo194/test_case-study_tirta-medical-frontend.git)
+   git clone this link : (git@github.com:adiprabowo194/test_case-study_tirta-medical-frontend.git)
    cd todo-apps-dashboard
    ```
