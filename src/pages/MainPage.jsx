@@ -13,10 +13,15 @@ import {
   DropdownMenu,
   DropdownItem,
   Button,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
 } from "reactstrap";
 import { useAuth } from "../contexts/AuthContext";
 import { useTodo } from "../contexts/TodoContext";
 import TodoModal from "../components/TodoModal";
+import { X } from "lucide-react"; // Import X untuk icon close
 
 import {
   Search,
@@ -29,12 +34,12 @@ import {
   Trash2,
 } from "lucide-react";
 
-// --- KOMPONEN TODO ITEM (Tetap sama) ---
+// --- KOMPONEN TODO ITEM ---
 const TodoItem = ({
   todo,
   isCheckedCol,
   onEdit,
-  onDelete,
+  onDeleteRequest, // Ubah prop ini
   onToggle,
   onToggleSub,
   onDeleteSub,
@@ -96,7 +101,7 @@ const TodoItem = ({
               <DropdownItem onClick={() => onEdit(todo)}>Edit</DropdownItem>
               <DropdownItem
                 className="text-danger"
-                onClick={() => onDelete(todo.id)}
+                onClick={() => onDeleteRequest(todo)}
               >
                 Delete
               </DropdownItem>
@@ -154,15 +159,35 @@ const MainPage = () => {
     toggleSubTodo,
     deleteSubTodo,
   } = useTodo();
+
   const [search, setSearch] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [taskToEdit, setTaskToEdit] = useState(null);
 
+  // State baru untuk Modal Konfirmasi Hapus
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
+
   const handleSave = (data) => {
     taskToEdit ? updateTodo(data) : addTodo(data);
     setIsModalOpen(false);
     setTaskToEdit(null);
+  };
+
+  // Fungsi untuk memicu modal konfirmasi
+  const triggerDeleteConfirm = (todo) => {
+    setItemToDelete(todo);
+    setDeleteModalOpen(true);
+  };
+
+  // Fungsi eksekusi hapus setelah konfirmasi
+  const executeDelete = () => {
+    if (itemToDelete) {
+      deleteTodo(itemToDelete.id);
+      setDeleteModalOpen(false);
+      setItemToDelete(null);
+    }
   };
 
   return (
@@ -173,6 +198,9 @@ const MainPage = () => {
           .sidebar-link { border-radius: 0 50px 50px 0; margin-right: 15px; transition: 0.3s; }
           .sidebar-link.active { background: linear-gradient(180deg, #154886 0%, #4F92E3 100%); color: white !important; box-shadow: 0 4px 10px rgba(21, 72, 134, 0.3); }
           .main-wrapper { background-color: #f8f9fa; border-radius: 30px 0 0 0; }
+          .modal-content { border-radius: 15px; border: none; }
+          .btn-confirm { background-color: #154886; border: none; padding: 10px 30px; border-radius: 8px; }
+          .btn-cancel { background-color: #E2E8F0; color: #475569; border: none; padding: 10px 30px; border-radius: 8px; }
         `}
       </style>
 
@@ -184,7 +212,6 @@ const MainPage = () => {
         <div className="p-4 mb-2">
           <img src="/logo.png" alt="Todo Apps" width="130" />
         </div>
-
         <Nav vertical className="flex-grow-1">
           <NavItem>
             <NavLink
@@ -205,9 +232,8 @@ const MainPage = () => {
         </Nav>
       </div>
 
-      {/* RIGHT SIDE (HEADER + CONTENT) */}
+      {/* RIGHT SIDE */}
       <div className="flex-grow-1 d-flex flex-column main-wrapper shadow-sm">
-        {/* TOPBAR / HEADER */}
         <header
           className="d-flex align-items-center justify-content-between px-4 bg-white"
           style={{ height: "80px" }}
@@ -225,12 +251,10 @@ const MainPage = () => {
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
-
           <div className="d-flex align-items-center gap-4">
             <Calendar className="text-muted cursor-pointer" size={22} />
             <div className="d-flex align-items-center gap-3">
               <div className="text-end d-none d-sm-block">
-                {/* Mengambil bagian depan email sebelum @ */}
                 <div className="fw-bold text-dark small">
                   {user?.email ? user.email.split("@")[0] : "Guest"}
                 </div>
@@ -258,12 +282,17 @@ const MainPage = () => {
                   ></span>
                 </DropdownToggle>
                 <DropdownMenu
+                  end
                   className="shadow border-0 mt-2 p-2"
                   style={{
                     borderRadius: "10px",
+
                     minWidth: "160px",
+
                     transform: "translateX(-65%) translateY(50%)",
+
                     left: "auto",
+
                     right: "0",
                   }}
                 >
@@ -279,7 +308,6 @@ const MainPage = () => {
           </div>
         </header>
 
-        {/* PAGE CONTENT */}
         <main className="flex-grow-1 p-4 overflow-auto">
           <div className="d-flex justify-content-between align-items-center mb-4">
             <div className="d-flex align-items-center gap-2">
@@ -300,7 +328,6 @@ const MainPage = () => {
           </div>
 
           {todos.length === 0 ? (
-            /* EMPTY STATE sesuai gambar */
             <div className="d-flex flex-column align-items-center justify-content-center h-75 opacity-75">
               <img
                 src="/empty-state-illustration.png"
@@ -326,7 +353,7 @@ const MainPage = () => {
                         todo={t}
                         isCheckedCol={false}
                         onEdit={setTaskToEdit}
-                        onDelete={deleteTodo}
+                        onDeleteRequest={triggerDeleteConfirm}
                         onToggle={toggleTodo}
                         onToggleSub={toggleSubTodo}
                         onDeleteSub={deleteSubTodo}
@@ -349,7 +376,7 @@ const MainPage = () => {
                         todo={t}
                         isCheckedCol={true}
                         onEdit={setTaskToEdit}
-                        onDelete={deleteTodo}
+                        onDeleteRequest={triggerDeleteConfirm}
                         onToggle={toggleTodo}
                         onToggleSub={toggleSubTodo}
                         onDeleteSub={deleteSubTodo}
@@ -361,6 +388,40 @@ const MainPage = () => {
           )}
         </main>
       </div>
+
+      {/* --- MODAL KONFIRMASI HAPUS (Sesuai Gambar) --- */}
+      <Modal
+        isOpen={deleteModalOpen}
+        toggle={() => setDeleteModalOpen(false)}
+        centered
+      >
+        <div className="p-3 border-bottom d-flex justify-content-between align-items-center">
+          <h5 className="m-0 fw-bold" style={{ color: "#475569" }}>
+            Confirm Delete
+          </h5>
+          <X
+            className="cursor-pointer text-muted"
+            size={20}
+            onClick={() => setDeleteModalOpen(false)}
+          />
+        </div>
+        <ModalBody className="py-4">
+          <p className="text-muted mb-0">
+            Are you sure want to delete <strong>{itemToDelete?.title}</strong>?
+          </p>
+        </ModalBody>
+        <ModalFooter className="border-0 pb-4 justify-content-center gap-3">
+          <Button className="btn-confirm" onClick={executeDelete}>
+            Confirm
+          </Button>
+          <Button
+            className="btn-cancel"
+            onClick={() => setDeleteModalOpen(false)}
+          >
+            Cancel
+          </Button>
+        </ModalFooter>
+      </Modal>
 
       <TodoModal
         isOpen={isModalOpen || !!taskToEdit}
