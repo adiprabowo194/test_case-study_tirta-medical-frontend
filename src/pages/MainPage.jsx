@@ -17,6 +17,7 @@ import {
 import { useAuth } from "../contexts/AuthContext";
 import { useTodo } from "../contexts/TodoContext";
 import TodoModal from "../components/TodoModal";
+
 import {
   Search,
   Calendar,
@@ -28,7 +29,7 @@ import {
   Trash2,
 } from "lucide-react";
 
-// --- KOMPONEN TODO ITEM ---
+// --- KOMPONEN TODO ITEM (Tetap sama) ---
 const TodoItem = ({
   todo,
   isCheckedCol,
@@ -39,14 +40,11 @@ const TodoItem = ({
   onDeleteSub,
 }) => {
   const [cardMenuOpen, setCardMenuOpen] = useState(false);
-
-  // Fungsi pembantu untuk format tanggal
   const formatTodoDate = (dateString) => {
     const todoDate = new Date(dateString);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const formattedDate = todoDate.toLocaleDateString("en-GB");
-
     if (new Date(todoDate).setHours(0, 0, 0, 0) < today.getTime()) {
       return { text: `Overdue - ${formattedDate}`, color: "text-danger" };
     } else if (new Date(todoDate).setHours(0, 0, 0, 0) === today.getTime()) {
@@ -54,7 +52,6 @@ const TodoItem = ({
     }
     return { text: formattedDate, color: "text-primary" };
   };
-
   const dateInfo = formatTodoDate(todo.dateTime);
 
   return (
@@ -62,7 +59,6 @@ const TodoItem = ({
       className="border shadow-sm mb-3 bg-white"
       style={{ borderRadius: "15px", padding: "12px 16px" }}
     >
-      {/* Container Utama Task */}
       <div className="d-flex align-items-center justify-content-between mb-1">
         <div className="d-flex align-items-center flex-grow-1">
           <Input
@@ -77,7 +73,6 @@ const TodoItem = ({
             {todo.title}
           </span>
         </div>
-
         <div className="d-flex align-items-center gap-2">
           <small
             className={`${isCheckedCol ? "text-primary" : dateInfo.color} fw-bold`}
@@ -112,15 +107,12 @@ const TodoItem = ({
           </Dropdown>
         </div>
       </div>
-
-      {/* Container Sub-Todos */}
       {todo.subTodos?.length > 0 && (
         <div className="mt-2 d-flex flex-column gap-2">
           {todo.subTodos.map((sub) => (
             <div
               key={sub.id}
               className="d-flex align-items-center justify-content-between border rounded-pill px-3 py-2 bg-light shadow-sm ms-4"
-              style={{ border: "1px solid #f0f0f0" }}
             >
               <div className="d-flex align-items-center">
                 <Input
@@ -150,7 +142,7 @@ const TodoItem = ({
   );
 };
 
-// --- KOMPONEN HALAMAN UTAMA ---
+// --- MAIN PAGE ---
 const MainPage = () => {
   const { user, logout } = useAuth();
   const {
@@ -174,137 +166,130 @@ const MainPage = () => {
   };
 
   return (
-    <Container
-      fluid
-      className="p-0 vh-100 d-flex flex-column bg-light overflow-hidden"
-    >
+    <Container fluid className="p-0 vh-100 d-flex overflow-hidden bg-white">
       <style>
         {`
-          .custom-green-checkbox.form-check-input:checked {
-            background-color: #28a745 !important;
-            border-color: #28a745 !important;
-            box-shadow: none !important;
-          }
-          .custom-green-checkbox.form-check-input:focus {
-            box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.25) !important;
-            border-color: #28a745 !important;
-          }
-          .custom-green-checkbox.form-check-input {
-            cursor: pointer;
-            width: 1.2rem;
-            height: 1.2rem;
-          }
-            .dropdown-menu {
-      z-index: 1050 !important;
-    }
+          .custom-green-checkbox.form-check-input:checked { background-color: #28a745 !important; border-color: #28a745 !important; }
+          .sidebar-link { border-radius: 0 50px 50px 0; margin-right: 15px; transition: 0.3s; }
+          .sidebar-link.active { background: linear-gradient(180deg, #154886 0%, #4F92E3 100%); color: white !important; box-shadow: 0 4px 10px rgba(21, 72, 134, 0.3); }
+          .main-wrapper { background-color: #f8f9fa; border-radius: 30px 0 0 0; }
         `}
       </style>
 
-      {/* HEADER */}
-      <header
-        className="bg-white px-4 py-2 border-bottom d-flex justify-content-between align-items-center"
-        style={{ height: "70px", flexShrink: 0 }}
+      {/* LEFT SIDEBAR */}
+      <div
+        className="d-flex flex-column bg-white border-end"
+        style={{ width: "260px", zIndex: 10 }}
       >
-        <div className="d-flex align-items-center" style={{ width: "200px" }}>
-          <img src="/logo.png" alt="Todo Apps" width="120" />
+        <div className="p-4 mb-2">
+          <img src="/logo.png" alt="Todo Apps" width="130" />
         </div>
 
-        <div className="flex-grow-1 px-md-5">
-          <div
-            className="position-relative mx-auto"
-            style={{ maxWidth: "600px" }}
-          >
+        <Nav vertical className="flex-grow-1">
+          <NavItem>
+            <NavLink
+              href="#"
+              className="sidebar-link text-muted d-flex align-items-center gap-3 py-3 ps-4"
+            >
+              <LayoutDashboard size={20} /> Dashboard
+            </NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink
+              href="#"
+              className="sidebar-link active d-flex align-items-center gap-3 py-3 ps-4"
+            >
+              <CheckSquare size={20} /> Todo
+            </NavLink>
+          </NavItem>
+        </Nav>
+      </div>
+
+      {/* RIGHT SIDE (HEADER + CONTENT) */}
+      <div className="flex-grow-1 d-flex flex-column main-wrapper shadow-sm">
+        {/* TOPBAR / HEADER */}
+        <header
+          className="d-flex align-items-center justify-content-between px-4 bg-white"
+          style={{ height: "80px" }}
+        >
+          <div className="position-relative" style={{ width: "75%" }}>
             <Search
               className="position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"
               size={18}
             />
             <Input
               placeholder="Search"
-              className="ps-5 border-0 bg-light"
-              style={{ borderRadius: "10px" }}
+              className="ps-5 border-0 bg-light shadow-sm"
+              style={{ borderRadius: "12px", height: "45px" }}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
-        </div>
 
-        <div className="d-flex align-items-center gap-3">
-          <Calendar className="text-muted d-none d-md-block" size={20} />
-          <Dropdown
-            isOpen={dropdownOpen}
-            toggle={() => setDropdownOpen(!dropdownOpen)}
-          >
-            <DropdownToggle
-              color="link"
-              className="text-decoration-none p-0 border-0"
-            >
-              <img
-                src={`https://ui-avatars.com/api/?name=${user?.email}&background=0D8ABC&color=fff`}
-                alt="avatar"
-                className="rounded-circle"
-                width="35"
-              />
-            </DropdownToggle>
-
-            <DropdownMenu
-              className="shadow border-0 mt-2 p-2"
-              style={{
-                borderRadius: "10px",
-                minWidth: "160px",
-                transform: "translateX(-65%) translateY(50%)",
-                left: "auto",
-                right: "0",
-              }}
-            >
-              <DropdownItem
-                onClick={logout}
-                className="text-danger d-flex align-items-center gap-2 rounded py-1"
+          <div className="d-flex align-items-center gap-4">
+            <Calendar className="text-muted cursor-pointer" size={22} />
+            <div className="d-flex align-items-center gap-3">
+              <div className="text-end d-none d-sm-block">
+                {/* Mengambil bagian depan email sebelum @ */}
+                <div className="fw-bold text-dark small">
+                  {user?.email ? user.email.split("@")[0] : "Guest"}
+                </div>
+                <div className="text-muted" style={{ fontSize: "11px" }}>
+                  Admin
+                </div>
+              </div>
+              <Dropdown
+                isOpen={dropdownOpen}
+                toggle={() => setDropdownOpen(!dropdownOpen)}
               >
-                <LogOut size={16} /> Logout
-              </DropdownItem>
-            </DropdownMenu>
-          </Dropdown>{" "}
-        </div>
-      </header>
+                <DropdownToggle
+                  color="link"
+                  className="p-0 border-0 position-relative"
+                >
+                  <img
+                    src={`https://ui-avatars.com/api/?name=${user?.email}&background=0D8ABC&color=fff`}
+                    alt="avatar"
+                    className="rounded-circle"
+                    width="35"
+                  />
+                  <span
+                    className="position-absolute bottom-0 end-0 bg-success border border-white rounded-circle"
+                    style={{ width: "12px", height: "12px" }}
+                  ></span>
+                </DropdownToggle>
+                <DropdownMenu
+                  className="shadow border-0 mt-2 p-2"
+                  style={{
+                    borderRadius: "10px",
+                    minWidth: "160px",
+                    transform: "translateX(-65%) translateY(50%)",
+                    left: "auto",
+                    right: "0",
+                  }}
+                >
+                  <DropdownItem
+                    onClick={logout}
+                    className="text-danger d-flex align-items-center gap-2 rounded py-1"
+                  >
+                    <LogOut size={16} /> Logout
+                  </DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
+            </div>
+          </div>
+        </header>
 
-      <div className="d-flex flex-grow-1 overflow-hidden">
-        {/* SIDEBAR */}
-        <div
-          className="bg-white border-end d-none d-md-block"
-          style={{ width: "240px" }}
-        >
-          <Nav vertical className="p-3 gap-2">
-            <NavItem>
-              <NavLink
-                href="#"
-                className="text-muted d-flex align-items-center gap-3 p-3"
-              >
-                <LayoutDashboard size={20} /> Dashboard
-              </NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink
-                href="#"
-                className="text-white d-flex align-items-center gap-3 p-2 rounded shadow-sm border-0"
-                style={{
-                  background:
-                    "linear-gradient(180deg, #154886 0%, #4F92E3 100%)", // Gradasi sesuai gambar
-                  fontWeight: "500",
-                }}
-              >
-                <CheckSquare size={20} /> Todo
-              </NavLink>
-            </NavItem>
-          </Nav>
-        </div>
-
-        {/* MAIN CONTENT */}
-        <main className="flex-grow-1 p-4 overflow-auto bg-light">
+        {/* PAGE CONTENT */}
+        <main className="flex-grow-1 p-4 overflow-auto">
           <div className="d-flex justify-content-between align-items-center mb-4">
-            <h3 className="fw-bold m-0 text-dark">📝 Todo</h3>
+            <div className="d-flex align-items-center gap-2">
+              <span style={{ fontSize: "24px" }}>📝</span>
+              <h3 className="fw-bold m-0 text-dark">Todo</h3>
+            </div>
             <Button
               color="white"
-              className="shadow-sm border bg-white px-3"
+              className="shadow-sm border bg-white px-4 py-2 d-flex align-items-center gap-2"
+              style={{ borderRadius: "10px", fontWeight: "600" }}
               onClick={() => {
                 setTaskToEdit(null);
                 setIsModalOpen(true);
@@ -314,55 +299,66 @@ const MainPage = () => {
             </Button>
           </div>
 
-          <Row className="g-2">
-            <Col lg={6}>
-              <div className="border px-3 rounded-4 py-4 h-100">
-                <h6 className="text-muted fw-bold mb-3 px-2">Not Checked</h6>
-                {todos
-                  .filter(
-                    (t) =>
-                      !t.isDone &&
-                      t.title.toLowerCase().includes(search.toLowerCase()),
-                  )
-                  .map((t) => (
-                    <TodoItem
-                      key={t.id}
-                      todo={t}
-                      isCheckedCol={false}
-                      onEdit={setTaskToEdit}
-                      onDelete={deleteTodo}
-                      onToggle={toggleTodo}
-                      onToggleSub={toggleSubTodo}
-                      onDeleteSub={deleteSubTodo}
-                    />
-                  ))}
-              </div>
-            </Col>
-
-            <Col lg={6}>
-              <div className="border px-3 rounded-4 py-4 h-100">
-                <h6 className="text-muted fw-bold mb-3 px-2">Checked</h6>
-                {todos
-                  .filter(
-                    (t) =>
-                      t.isDone &&
-                      t.title.toLowerCase().includes(search.toLowerCase()),
-                  )
-                  .map((t) => (
-                    <TodoItem
-                      key={t.id}
-                      todo={t}
-                      isCheckedCol={true}
-                      onEdit={setTaskToEdit}
-                      onDelete={deleteTodo}
-                      onToggle={toggleTodo}
-                      onToggleSub={toggleSubTodo}
-                      onDeleteSub={deleteSubTodo}
-                    />
-                  ))}
-              </div>
-            </Col>
-          </Row>
+          {todos.length === 0 ? (
+            /* EMPTY STATE sesuai gambar */
+            <div className="d-flex flex-column align-items-center justify-content-center h-75 opacity-75">
+              <img
+                src="/empty-state-illustration.png"
+                alt="Empty"
+                width="300"
+              />
+              <p className="text-muted mt-3">You Don't Have a Todo Yet</p>
+            </div>
+          ) : (
+            <Row className="g-4">
+              <Col lg={6}>
+                <div className="bg-transparent px-2">
+                  <h6 className="text-muted fw-bold mb-3">Not Checked</h6>
+                  {todos
+                    .filter(
+                      (t) =>
+                        !t.isDone &&
+                        t.title.toLowerCase().includes(search.toLowerCase()),
+                    )
+                    .map((t) => (
+                      <TodoItem
+                        key={t.id}
+                        todo={t}
+                        isCheckedCol={false}
+                        onEdit={setTaskToEdit}
+                        onDelete={deleteTodo}
+                        onToggle={toggleTodo}
+                        onToggleSub={toggleSubTodo}
+                        onDeleteSub={deleteSubTodo}
+                      />
+                    ))}
+                </div>
+              </Col>
+              <Col lg={6}>
+                <div className="bg-transparent px-2">
+                  <h6 className="text-muted fw-bold mb-3">Checked</h6>
+                  {todos
+                    .filter(
+                      (t) =>
+                        t.isDone &&
+                        t.title.toLowerCase().includes(search.toLowerCase()),
+                    )
+                    .map((t) => (
+                      <TodoItem
+                        key={t.id}
+                        todo={t}
+                        isCheckedCol={true}
+                        onEdit={setTaskToEdit}
+                        onDelete={deleteTodo}
+                        onToggle={toggleTodo}
+                        onToggleSub={toggleSubTodo}
+                        onDeleteSub={deleteSubTodo}
+                      />
+                    ))}
+                </div>
+              </Col>
+            </Row>
+          )}
         </main>
       </div>
 

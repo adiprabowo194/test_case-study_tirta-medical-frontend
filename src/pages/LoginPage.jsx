@@ -61,7 +61,7 @@ const LoginPage = () => {
   return (
     <Container fluid className="p-0 vh-100 overflow-hidden">
       <Row className="g-0 h-100">
-        {/* SISI KIRI: ILUSTRASI DENGAN BACKGROUND #F8FAFF */}
+        {/* SISI KIRI: ILUSTRASI  */}
         <Col
           md={6}
           lg={7}

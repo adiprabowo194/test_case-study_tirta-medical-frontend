@@ -24,9 +24,6 @@ export const TodoProvider = ({ children }) => {
     setTodos(todos.filter((t) => t.id !== id));
   };
 
-  //const toggleTodo = (id) => {
-  //setTodos(todos.map((t) => (t.id === id ? { ...t, isDone: !t.isDone } : t)));
-  // };
   const toggleTodo = (id) => {
     setTodos((prevTodos) =>
       prevTodos.map((todo) => {
